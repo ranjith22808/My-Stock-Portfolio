@@ -58,52 +58,56 @@
     </div>
 
     <script>
-        // PASTE YOUR LATEST DEPLOYMENT URL HERE
-        const API_URL = "https://script.google.com/macros/s/AKfycbxlKO4-ObCcKw1mJLUxMysR3lkFtYszTZXEMXX2Asf3OUl4jg83OhiSpaajIv0iglbT/exec";
+    // YOUR VERIFIED URL
+    const API_URL = "https://script.google.com/macros/s/AKfycbxlKO4-ObCcKw1mJLUxMysR3lkFtYszTZXEMXX2Asf3OUl4jg83OhiSpaajIv0iglbT/exec";
 
-        async function syncData() {
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                const tbody = document.getElementById('p-body');
-                tbody.innerHTML = '';
+    async function syncData() {
+        const tbody = document.getElementById('p-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Connecting to Matisha Systems...</td></tr>';
 
-                let iSum = 0, vSum = 0, pSum = 0;
+        try {
+            // Using a CORS Proxy to bypass browser blocks
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL);
+            
+            const res = await fetch(proxyUrl);
+            const data = await res.json();
+            
+            tbody.innerHTML = '';
+            let iSum = 0, vSum = 0, pSum = 0;
 
-                data.forEach(s => {
-                    iSum += (s.qty * s.avgPrice);
-                    vSum += s.currentValue;
-                    pSum += s.pnl;
+            data.forEach(s => {
+                iSum += (Number(s.qty) * Number(s.avgPrice));
+                vSum += Number(s.currentValue);
+                pSum += Number(s.pnl);
 
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="p-6 font-black text-blue-300 text-lg">${s.symbol}</td>
-                            <td class="p-6 text-[10px] font-black text-slate-500 uppercase">${s.broker}</td>
-                            <td class="p-6 text-right font-mono text-slate-400">${s.qty}</td>
-                            <td class="p-6 text-right font-mono text-indigo-200">₹${s.ltp.toFixed(2)}</td>
-                            <td class="p-6 text-right font-bold ${s.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">
-                                ${s.pnl >= 0 ? '▲' : '▼'} ₹${Math.abs(s.pnl).toLocaleString('en-IN')}
-                            </td>
-                        </tr>
-                    `;
-                });
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/[0.02] border-b border-white/5">
+                        <td class="p-6 font-black text-blue-300 text-lg">${s.symbol}</td>
+                        <td class="p-6 text-[10px] font-black text-slate-500 uppercase">${s.broker}</td>
+                        <td class="p-6 text-right font-mono text-slate-400">${s.qty}</td>
+                        <td class="p-6 text-right font-mono text-indigo-200">₹${Number(s.ltp).toFixed(2)}</td>
+                        <td class="p-6 text-right font-bold ${s.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">
+                            ${s.pnl >= 0 ? '▲' : '▼'} ₹${Math.abs(s.pnl).toLocaleString('en-IN')}
+                        </td>
+                    </tr>`;
+            });
 
-                document.getElementById('t-inv').innerText = `₹${iSum.toLocaleString('en-IN')}`;
-                document.getElementById('t-val').innerText = `₹${vSum.toLocaleString('en-IN')}`;
-                document.getElementById('t-pl').innerText = `${pSum >= 0 ? '+' : '-'} ₹${Math.abs(pSum).toLocaleString('en-IN')}`;
-                
-                const plH = document.getElementById('t-pl');
-                const plC = document.getElementById('pl-card');
-                plH.className = `text-3xl font-bold mt-2 ${pSum >= 0 ? 'text-green-400' : 'text-red-400'}`;
-                plC.style.borderTopColor = pSum >= 0 ? '#4ade80' : '#f87171';
+            // Update Header Stats
+            document.getElementById('t-inv').innerText = `₹${iSum.toLocaleString('en-IN')}`;
+            document.getElementById('t-val').innerText = `₹${vSum.toLocaleString('en-IN')}`;
+            document.getElementById('t-pl').innerText = `${pSum >= 0 ? '+' : '-'} ₹${Math.abs(pSum).toLocaleString('en-IN')}`;
+            document.getElementById('pl-card').style.borderTopColor = pSum >= 0 ? '#4ade80' : '#f87171';
 
-            } catch (e) {
-                console.error("Sync Error:", e);
-                alert("Connection failed. Check your Apps Script deployment.");
-            }
+        } catch (e) {
+            console.error("Sync Error:", e);
+            tbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">
+                CONNECTION FAILED. <br> 
+                <span class="text-xs text-slate-500 font-normal">Check if your Apps Script Deployment is set to 'Anyone'.</span>
+            </td></tr>`;
         }
+    }
 
-        syncData();
-    </script>
+    syncData();
+</script>
 </body>
 </html>
