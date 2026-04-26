@@ -2,112 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matisha Wealth Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ranjith Portfolio</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2534/2534204.png">
+    
     <style>
-        body { background: radial-gradient(circle at top left, #1e293b, #0f172a); min-height: 100vh; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; background-color: #0f172a; }
+        iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
-<body class="text-slate-200 p-4 md:p-10 font-sans">
-
-    <div class="max-w-5xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
-            <div class="text-center md:text-left">
-                <h1 class="text-4xl font-black text-blue-400 italic tracking-tighter">MATISHA WEALTH PRO</h1>
-                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.4em] mt-1">Live Portfolio Monitor</p>
-            </div>
-            <button onclick="syncData()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black py-3 px-10 rounded-full transition-all shadow-lg shadow-blue-500/20 active:scale-95">
-                SYNC NOW
-            </button>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="glass p-8 rounded-3xl">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Invested</p>
-                <h2 id="t-inv" class="text-3xl font-mono mt-2">₹0.00</h2>
-            </div>
-            <div class="glass p-8 rounded-3xl">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Market Value</p>
-                <h2 id="t-val" class="text-3xl font-mono mt-2 text-indigo-400">₹0.00</h2>
-            </div>
-            <div id="pl-card" class="glass p-8 rounded-3xl border-t-4 border-slate-700">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Profit/Loss</p>
-                <h2 id="t-pl" class="text-3xl font-bold mt-2">₹0.00</h2>
-            </div>
-        </div>
-
-        <div class="glass rounded-3xl overflow-hidden shadow-2xl">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-white/5 text-slate-500 text-[10px] font-black uppercase">
-                        <tr>
-                            <th class="p-6">Stock</th>
-                            <th class="p-6">Broker</th>
-                            <th class="p-6 text-right">Qty</th>
-                            <th class="p-6 text-right">LTP</th>
-                            <th class="p-6 text-right">P&L</th>
-                        </tr>
-                    </thead>
-                    <tbody id="p-body" class="divide-y divide-white/5">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+<body>
+    <iframe src="https://script.google.com/macros/s/AKfycbwi1vWKZT3_DDOLirgYrIccfHylELJVjLpGn3grwrsgzXPKlKk2MOuE0iOOR6tzRK-n/exec"></iframe>
 
     <script>
-    // YOUR VERIFIED URL
-    const API_URL = "https://script.google.com/macros/s/AKfycbxlKO4-ObCcKw1mJLUxMysR3lkFtYszTZXEMXX2Asf3OUl4jg83OhiSpaajIv0iglbT/exec";
-
-    async function syncData() {
-        const tbody = document.getElementById('p-body');
-        tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center animate-pulse">Connecting to Matisha Systems...</td></tr>';
-
-        try {
-            // Using a CORS Proxy to bypass browser blocks
-            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(API_URL);
-            
-            const res = await fetch(proxyUrl);
-            const data = await res.json();
-            
-            tbody.innerHTML = '';
-            let iSum = 0, vSum = 0, pSum = 0;
-
-            data.forEach(s => {
-                iSum += (Number(s.qty) * Number(s.avgPrice));
-                vSum += Number(s.currentValue);
-                pSum += Number(s.pnl);
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-white/[0.02] border-b border-white/5">
-                        <td class="p-6 font-black text-blue-300 text-lg">${s.symbol}</td>
-                        <td class="p-6 text-[10px] font-black text-slate-500 uppercase">${s.broker}</td>
-                        <td class="p-6 text-right font-mono text-slate-400">${s.qty}</td>
-                        <td class="p-6 text-right font-mono text-indigo-200">₹${Number(s.ltp).toFixed(2)}</td>
-                        <td class="p-6 text-right font-bold ${s.pnl >= 0 ? 'text-green-400' : 'text-red-400'}">
-                            ${s.pnl >= 0 ? '▲' : '▼'} ₹${Math.abs(s.pnl).toLocaleString('en-IN')}
-                        </td>
-                    </tr>`;
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
             });
-
-            // Update Header Stats
-            document.getElementById('t-inv').innerText = `₹${iSum.toLocaleString('en-IN')}`;
-            document.getElementById('t-val').innerText = `₹${vSum.toLocaleString('en-IN')}`;
-            document.getElementById('t-pl').innerText = `${pSum >= 0 ? '+' : '-'} ₹${Math.abs(pSum).toLocaleString('en-IN')}`;
-            document.getElementById('pl-card').style.borderTopColor = pSum >= 0 ? '#4ade80' : '#f87171';
-
-        } catch (e) {
-            console.error("Sync Error:", e);
-            tbody.innerHTML = `<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">
-                CONNECTION FAILED. <br> 
-                <span class="text-xs text-slate-500 font-normal">Check if your Apps Script Deployment is set to 'Anyone'.</span>
-            </td></tr>`;
         }
-    }
-
-    syncData();
-</script>
+    </script>
 </body>
 </html>
